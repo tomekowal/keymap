@@ -1,10 +1,21 @@
 defmodule ExKeymap.Keymap do
-  defstruct [:mappings]
-
   alias ExKeymap.KeymapItem
+  defstruct [:mappings, :state]
 
-  @type key :: 32..127 #aplha numeric range
-  @type t :: %__MODULE__{
-    mappings: [{key(), t() | KeymapItem.t()}]
-  }
+  @opaque t :: [KeymapItem.t()]
+  
+  def new() do
+    %__MODULE__{mappings: [], state: nil}
+  end
+
+  def put(%__MODULE__{} = keymap, binding, name, action) do
+    %__MODULE__{keymap | mappings: [KeymapItem.new(binding, name, action) | keymap.mappings]}
+  end
+
+  def get(%__MODULE__{} = keymap, binding) do
+    item = Enum.find(keymap.mappings, fn %KeymapItem{binding: item_binding} -> item_binding == binding end)
+    if item do
+      item.fun.(keymap.state)
+    end
+  end
 end

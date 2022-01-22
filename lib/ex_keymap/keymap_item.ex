@@ -1,19 +1,25 @@
 defmodule ExKeymap.KeymapItem do
-  use TypeCheck
-  defstruct [:item_name, :help, :fun]
+  defstruct [:binding, :name, :fun, :help, :predicate]
 
-  @type! t :: %__MODULE__{
-    item_name: String.t(),
-    fun: (-> any()),
-    help: String.t() | nil
+  @type state :: any()
+  @type binding :: 32..127
+
+  @type t :: %__MODULE__{
+    binding: binding(),
+    name: String.t(),
+    fun: (state() -> any()),
+    help: String.t() | nil,
+    predicate: (state() -> boolean())
   }
 
-  @spec! new(String.t(), (-> any()), String.t() | nil) :: t()
-  def new(item_name, fun, help \\ nil) do
+  @spec new(binding(), String.t(), (state() -> any()), String.t() | nil, (state() -> boolean())) :: t()
+  def new(binding, name, fun, help \\ nil, predicate \\ fn _ -> true end) do
     %__MODULE__{
-      item_name: item_name,
+      binding: binding,
+      name: name,
       fun: fun,
-      help: help
+      help: help,
+      predicate: predicate
     }
   end
 end
