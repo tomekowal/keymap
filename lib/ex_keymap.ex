@@ -7,22 +7,22 @@ defmodule ExKeymap do
   ## Examples
 
       iex> keymap = Keymap.new() |> Keymap.put(?a, "action a name", fn -> "result a" end)
-      iex> keymap[?a]
+      iex> keymap[?a].()
       "result a"
 
       iex> inner = Keymap.new() |> Keymap.put(?b, "action b name", fn -> "result b" end)
       iex> keymap = Keymap.new() |> Keymap.put(?a, "submenu a", inner)
-      iex> keymap[?a][?b]
+      iex> keymap[?a][?b].()
       "result b"
 
       iex> inner = Keymap.new() |> Keymap.put(?b, "action b name", fn -> "result b" end)
       iex> keymap = Keymap.new() |> Keymap.put(?a, "submenu a", inner)
       iex> keymap = Keymap.put_in(keymap, [?a, ?c], "action c", fn -> "action c" end)
-      iex> keymap[?a][?c]
+      iex> keymap[?a][?c].()
       "action c"
 
       iex> keymap = Keymap.new() |> Keymap.put(?a, "action a", fn -> "action a" end)
-      iex> for %{binding: binding, name: name} <- keymap, do: {binding, name}
+      iex> for {binding, item} <- keymap, do: {binding, item.name}
       [{?a, "action a"}]
   """
 end
