@@ -11,20 +11,25 @@ defmodule ExKeymap.Keymap do
   # TODO allow putting it at concrete place
   # TODO warn if already exists
   def put(%__MODULE__{} = keymap, binding, name, keymap_or_action) do
-    %__MODULE__{
-      keymap
-      | mappings: [KeymapItem.new(binding, name, keymap_or_action) | keymap.mappings]
-    }
+    keymap
+    |> update_mappings(fn mappings ->
+      [KeymapItem.new(binding, name, keymap_or_action) | mappings]
+    end)
   end
 
-  def get(%__MODULE__{} = keymap, binding) do
+  defp update_mappings(%__MODULE__{mappings: mappings} = keymap, fun) do
+    %__MODULE__{keymap | mappings: fun.(mappings)}
+  end
+
+  def get(%__MODULE__{mappings: mappings}, binding) do
     item =
-      Enum.find(keymap.mappings, fn %KeymapItem{binding: item_binding} ->
+      Enum.find(mappings, fn %KeymapItem{binding: item_binding} ->
         item_binding == binding
       end)
 
     case item.action_or_keymap do
       %Keymap{} = keymap -> keymap
+      # TODO should I call the action here?
       action when is_function(action, 0) -> action.()
     end
   end
