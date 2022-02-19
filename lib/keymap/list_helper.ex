@@ -1,4 +1,4 @@
-defmodule ExKeymap.ListHelper do
+defmodule Keymap.ListHelper do
   def update!(list, key, fun) when is_list(list) and is_function(fun, 1) do
     update!(list, key, fun, list)
   end

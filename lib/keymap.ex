@@ -1,8 +1,34 @@
-defmodule ExKeymap.Keymap do
+defmodule Keymap do
+  @moduledoc """
+  A data structure for defining Emacs like key bindings
+  inspired by its elisp counterpart
+  http://www.gnu.org/software/emacs/manual/html_node/elisp/Keymaps.html
+ 
+  ## Examples
+ 
+      iex> keymap = Keymap.new() |> Keymap.put(?a, "action a name", fn -> "result a" end)
+      iex> keymap[?a].()
+      "result a"
+ 
+      iex> inner = Keymap.new() |> Keymap.put(?b, "action b name", fn -> "result b" end)
+      iex> keymap = Keymap.new() |> Keymap.put(?a, "submenu a", inner)
+      iex> keymap[?a][?b].()
+      "result b"
+ 
+      iex> inner = Keymap.new() |> Keymap.put(?b, "action b name", fn -> "result b" end)
+      iex> keymap = Keymap.new() |> Keymap.put(?a, "submenu a", inner)
+      iex> keymap = Keymap.put_in(keymap, [?a, ?c], "action c", fn -> "action c" end)
+      iex> keymap[?a][?c].()
+      "action c"
+ 
+      iex> keymap = Keymap.new() |> Keymap.put(?a, "action a", fn -> "action a" end)
+      iex> for {binding, item} <- keymap, do: {binding, item.name}
+      [{?a, "action a"}]
+  """
+
   @behaviour Access
-  alias ExKeymap.KeymapItem
-  alias ExKeymap.Keymap
-  alias ExKeymap.ListHelper
+  alias Keymap.KeymapItem
+  alias Keymap.ListHelper
 
   defstruct [:mappings]
 
@@ -102,14 +128,11 @@ defmodule ExKeymap.Keymap do
   end
 end
 
-defimpl Enumerable, for: ExKeymap.Keymap do
-  alias ExKeymap.Keymap
-
+defimpl Enumerable, for: Keymap do
   def count(%Keymap{mappings: mappings}) do
     {:ok, length(mappings)}
   end
 
-  @spec member?(%ExKeymap.Keymap{}, any) :: {:error, Enumerable.ExKeymap.Keymap}
   def member?(_, _) do
     {:error, __MODULE__}
   end

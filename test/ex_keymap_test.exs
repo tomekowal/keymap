@@ -1,5 +1,4 @@
-defmodule ExKeymapTest do
+defmodule KeymapTest do
   use ExUnit.Case
-  alias ExKeymap.Keymap
-  doctest ExKeymap
+  doctest Keymap
 end

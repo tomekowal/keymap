@@ -1,6 +1,4 @@
-defmodule ExKeymap.KeymapItem do
-  alias ExKeymap.Keymap
-
+defmodule Keymap.KeymapItem do
   defstruct [:binding, :name, :action_or_keymap, :help]
 
   def new(name, action_or_keymap, help \\ nil)

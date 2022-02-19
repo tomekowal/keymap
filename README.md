@@ -1,4 +1,4 @@
-# ExKeymap
+# Keymap
 
 A data structure for storing and accessing key bindings.
 
@@ -7,7 +7,7 @@ A data structure for storing and accessing key bindings.
 ```elixir
 def deps do
   [
-    {:ex_keymap, "~> 0.1.0"}
+    {:keymap, "~> 0.1.0"}
   ]
 end
 ```
