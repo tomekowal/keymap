@@ -17,10 +17,6 @@ defmodule ExKeymap.Keymap do
     end)
   end
 
-  defp update_mappings(%__MODULE__{mappings: mappings} = keymap, fun) do
-    %__MODULE__{keymap | mappings: fun.(mappings)}
-  end
-
   def get(%__MODULE__{mappings: mappings}, binding) do
     item =
       Enum.find(mappings, fn %KeymapItem{binding: item_binding} ->
@@ -40,24 +36,27 @@ defmodule ExKeymap.Keymap do
 
   # TODO how to make this more readable?
   def put_in(%__MODULE__{} = keymap, [first_binding | rest_of_bindings], name, keymap_or_action) do
-    %__MODULE__{
-      keymap
-      | mappings:
-          Enum.map(
-            keymap.mappings,
-            fn
-              %KeymapItem{binding: ^first_binding} = item ->
-                %KeymapItem{
-                  item
-                  | action_or_keymap:
-                      put_in(item.action_or_keymap, rest_of_bindings, name, keymap_or_action)
-                }
+    keymap
+    |> update_mappings(fn mappings ->
+      Enum.map(
+        mappings,
+        fn
+          %KeymapItem{binding: ^first_binding} = item ->
+            %KeymapItem{
+              item
+              | action_or_keymap:
+              put_in(item.action_or_keymap, rest_of_bindings, name, keymap_or_action)
+        }
 
-              item ->
-                item
-            end
-          )
-    }
+          item ->
+            item
+        end
+      )
+    end)
+  end
+
+  defp update_mappings(%__MODULE__{mappings: mappings} = keymap, fun) do
+    %__MODULE__{keymap | mappings: fun.(mappings)}
   end
 
   @impl Access
